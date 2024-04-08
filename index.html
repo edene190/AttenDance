@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome Professor</title>
+    <link rel="stylesheet" href="https://unpkg.com/mvp.css"> 
+</head>
+<body>
+    <div style="text-align: center;">
+    <h1>Welcome Professor</h1>
+    <p>Scan your ID to proceed.</p>
+
+    <button id="scanButton">Scan ID</button>
+
+    <script>
+        // NFC logic for student ID scanning, checking existence,
+        // and prompting for name and email
+        const log = function(message) {
+            console.log(message);
+            document.querySelector('#log').textContent += message + '\n';
+        };
+
+        const scanProf = async () => {
+            log("User clicked scan button");
+
+            try {
+                const ndef = new NDEFReader();
+                await ndef.scan();
+                log("> Scan started");
+
+                ndef.addEventListener("readingerror", () => {
+                    log("Argh! Cannot read data from the NFC tag. Try another one?");
+                });
+
+                ndef.addEventListener("reading", async ({ message, serialNumber }) => {
+                    log(`> Serial Number: ${serialNumber}`);
+                    log(`> Records: (${message.records.length})`);
+                    
+
+                    try {
+                        const encodedSerialNumber = encodeURIComponent(serialNumber);
+                        const response = await fetch(`./checkNFCTeachers.php?id=${encodedSerialNumber}`);
+                        const data = await response.json();
+
+                        if (data.exists) {
+                            log(` > Professor exists`);
+                            window.location.href = 'selectClass.html';
+                        } else {
+                            log(`> Professor not in table`);
+                            const fname = prompt("Enter your first name:");
+                            const lname = prompt("Enter your last name:");
+                            const email = prompt("Enter your email:");
+                            
+                            const response = await fetch(`./insertNFCTeachers.php?nfcid=${encodedSerialNumber}&fname=${fname}&lname=${lname}&email=${email}`);
+                            const data = await response.json();
+                            if (data.inserted) {
+                                log("Professor inserted successfully.");
+                            } else {
+                                log("Error inserting professor: " + responseData.error);
+                            }
+                           
+                        }
+                    } catch (error) {
+                        log(`Scan again!`);
+                    }
+                });
+            } catch (error) {
+                log(error);
+            }
+        };
+        document.getElementById('scanButton').addEventListener('click', scanProf);
+        // Call the NFC scanning function
+        scanProf();
+    </script>
+
+    <pre id="log"></pre>
+    </div>
+</body>
+</html>

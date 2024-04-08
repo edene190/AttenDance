@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Class</title>
+    <link rel="stylesheet" href="https://unpkg.com/mvp.css"> 
+</head>
+<body>
+    <div style="text-align: center;">
+    <h1>Select Class</h1>
+    <p>Please select the class:</p>
+
+    <form method="post" action="welcomeStudent.php">
+        <label for="classDropdown" style="margin: 0 auto; display: block;">Choose a class:</label>
+        <select id="classDropdown" name="selectedClass" style="margin: 0 auto; display: block;">
+            <option value="" disabled selected>Select a class</option>
+            <option value="class1">Class 1</option>
+            <option value="class2">Class 2</option>
+            <option value="class3">Class 3</option>
+        </select>
+        <button type="submit">Go</button>
+    </form>
+
+    </div>
+</body>
+</html>
